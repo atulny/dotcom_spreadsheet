@@ -9,7 +9,7 @@ export default class Cell extends React.Component {
       editing: false,
       value: props.value,
     }
-    this.display = this.determineDisplay({ x: props.x, y: props.y }, props.value)
+    this.display = this.computeDisplay({ x: props.x, y: props.y }, props.value)
     this.timer = 0
     this.delay = 200
     this.prevent = false
@@ -47,7 +47,7 @@ export default class Cell extends React.Component {
    * when editing another cell that this might depend upon
    */
   componentWillUpdate() {
-    this.display = this.determineDisplay({ x: this.props.x, y: this.props.y }, this.state.value)
+    this.display = this.computeDisplay({ x: this.props.x, y: this.props.y }, this.state.value)
   }
 
   /**
@@ -63,14 +63,14 @@ export default class Cell extends React.Component {
    */
   onChange = (e) => {
     this.setState({ value: e.target.value })
-    this.display = this.determineDisplay({ x: this.props.x, y: this.props.y }, e.target.value)
+    this.display = this.computeDisplay({ x: this.props.x, y: this.props.y }, e.target.value)
     this.props.updateCells()
   }
 
   /**
    * Handle pressing a key when the Cell is an input element
    */
-  onKeyPressOnInput = (e) => {
+  onKeyOnInput = (e) => {
     if (e.key === 'Enter') {
       this.hasNewValue(e.target.value)
     }
@@ -80,7 +80,7 @@ export default class Cell extends React.Component {
    * Handle pressing a key when the Cell is a span element,
    * not yet in editing mode
    */
-  onKeyPressOnSpan = () => {
+  onKeyOnSpan = () => {
     if (!this.state.editing) {
       this.setState({ editing: true })
     }
@@ -103,7 +103,7 @@ export default class Cell extends React.Component {
   }
 
   /**
-   * Called by the `onBlur` or `onKeyPressOnInput` event handlers,
+   * Called by the `onBlur` or `onKeyOnInput` event handlers,
    * it escalates the value changed event, and restore the editing state
    * to `false`.
    */
@@ -160,7 +160,7 @@ export default class Cell extends React.Component {
   /**
    * Executes the formula calculation on the cell value
    */
-  determineDisplay = ({ x, y }, value) => {
+  computeDisplay = ({ x, y }, value) => {
     if (value.slice(0, 1) === '=') {
       const res = this.props.executeFormula({ x, y }, value.slice(1))
       if (res.error !== null) {
@@ -174,13 +174,13 @@ export default class Cell extends React.Component {
   /**
    * Calculates a cell's CSS values
    */
-  calculateCss = () => {
+  computeCss = () => {
     const css = {
       backgroundColor: "#fff",
       
       padding: '4px',
       margin: '0',
-      height: '25px',
+      height: '24px',
       boxSizing: 'border-box',
       position: 'relative',
       display: 'inline-block',
@@ -191,7 +191,7 @@ export default class Cell extends React.Component {
       fontSize: '14px',
       lineHeight: '15px',
       overflow: 'hidden',
-      fontFamily: 'Calibri, \'Segoe UI\', Thonburi, Arial, Verdana, sans-serif',
+      fontFamily: 'Verdana, sans-serif',
     }
 
     if (this.props.x === 0 || this.props.y === 0) {
@@ -204,7 +204,7 @@ export default class Cell extends React.Component {
   }
 
   render() {
-    const css = this.calculateCss()
+    const css = this.computeCss()
 
     // column 0
     if (this.props.x === 0) {
@@ -217,17 +217,18 @@ export default class Cell extends React.Component {
 
     // row 0
     if (this.props.y === 0) {
-      const alpha = ' abcdefghijklmnopqrstuvwxyz'.split('')
+      const alpha = ' ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')
       return (
-        <span onKeyPress={this.onKeyPressOnSpan} style={css} role="presentation">
+        <span onKeyPress={this.onKeyOnSpan} style={css} role="presentation">
           {alpha[this.props.x]}
         </span>
       )
     }
 
     if (this.state.selected) {
-      css.outlineColor = 'lightblue'
-      css.outlineStyle = 'dotted'
+      css.outlineColor = 'blue'
+      css.outlineStyle = 'solid'
+      css.zIndex=1
     }
 
     if (this.state.editing) {
@@ -236,7 +237,7 @@ export default class Cell extends React.Component {
           style={css}
           type="text"
           onBlur={this.onBlur}
-          onKeyPress={this.onKeyPressOnInput}
+          onKeyPress={this.onKeyOnInput}
           value={this.state.value}
           onChange={this.onChange}
           autoFocus

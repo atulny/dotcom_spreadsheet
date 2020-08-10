@@ -14,7 +14,7 @@ export default class Grid extends React.Component {
       data: {},
     }
 
-    this.tableIdentifier = `tableData-${props.id}`
+    this.tableIdentifier = `gridData-${props.id}`
 
     // Initialize the formula parser on demand
     this.parser = new FormulaParser()
@@ -67,7 +67,7 @@ export default class Grid extends React.Component {
           }
 
           if (value.slice(0, 1) === '=') {
-            const res = this.executeFormula({ x, y }, value.slice(1))
+            const res = this.execFormula({ x, y }, value.slice(1))
             if (res.error) {
               throw this.parser.Error(res.error)
             }
@@ -107,7 +107,7 @@ export default class Grid extends React.Component {
   /**
    * Executes the formula on the `value` usign the FormulaParser object
    */
-  executeFormula = (cell, value) => {
+  execFormula = (cell, value) => {
     this.parser.cell = cell
     let res = this.parser.parse(value)
     if (res.error != null) {
@@ -118,7 +118,7 @@ export default class Grid extends React.Component {
     }
     if (res.result.toString().slice(0, 1) === '=') {
       // formula points to formula
-      res = this.executeFormula(cell, res.result.slice(1))
+      res = this.execFormula(cell, res.result.slice(1))
     }
 
     return res
@@ -147,7 +147,7 @@ export default class Grid extends React.Component {
       rows.push(
         <Row
           handleChangedCell={this.handleChangedCell}
-          executeFormula={this.executeFormula}
+          execFormula={this.execFormula}
           updateCells={this.updateCells}
           key={y}
           y={y}
@@ -158,10 +158,10 @@ export default class Grid extends React.Component {
     }
     const css={
       display: 'grid' ,
-      'grid-template-columns': `repeat(${this.props.x+1}, 100px)`,
-      'background-color': '#fff',
-      'color' : '#444' ,
-      'max-width' :  '800px'
+      gridTemplateColumns: `repeat(${this.props.x+1}, 80px)`,
+      backgroundColor: '#fff',
+      color : '#444' ,
+      width :  'max-content'
     }
     return (
       <div style={css}> 
@@ -183,10 +183,6 @@ Grid.propTypes = {
    */
   y: PropTypes.number.isRequired,
 
-  /**
-   * An optional ID for the table, useful to use
-   * multiple tables and store into localStorage
-   */
   id: PropTypes.string,
 
   /**
