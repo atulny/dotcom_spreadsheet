@@ -142,7 +142,15 @@ export default class Cell extends React.Component {
       this.prevent = false
     }, this.delay)
   }
+  doubleClickedOnfirstRow = () => {
+    //alert(`add column at ${this.props.x}`)
+    this.props.addColumn()
+  }
+  doubleClickedOnfirstColumn = () => {
+    //alert(`add row at ${this.props.y}`)
+    this.props.addRow()
 
+  }
   /**
    * Handle doubleclicking a Cell.
    */
@@ -209,7 +217,7 @@ export default class Cell extends React.Component {
     // column 0
     if (this.props.x === 0) {
       return (
-        <span style={css}>
+        <span onDoubleClick={this.doubleClickedOnfirstColumn} style={css}>
           {this.props.y}
         </span>
       )
@@ -219,7 +227,7 @@ export default class Cell extends React.Component {
     if (this.props.y === 0) {
       const alpha = ' ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')
       return (
-        <span onKeyPress={this.onKeyOnSpan} style={css} role="presentation">
+        <span onKeyPress={this.onKeyOnSpan} onDoubleClick={this.doubleClickedOnfirstRow} style={css} role="presentation">
           {alpha[this.props.x]}
         </span>
       )

@@ -19,6 +19,9 @@ const Row = (props) => {
         updateCells={props.updateCells}
         value={props.rowData[x] || ''}
         executeFormula={props.executeFormula}
+        addColumn={props.addColumn}
+        addRow={props.addRow}
+
       />,
     )
   }

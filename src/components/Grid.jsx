@@ -26,7 +26,7 @@ export default class Grid extends React.Component {
       const y = cellCoord.row.index + 1
 
       // Check if I have that coordinates tuple in the table range
-      if (x > this.props.x || y > this.props.y) {
+      if (x > this.props.xy[0] || y > this.props.xy[1]) {
         throw this.parser.Error(this.parser.ERROR_NOT_AVAILABLE)
       }
 
@@ -138,11 +138,20 @@ export default class Grid extends React.Component {
       window.localStorage.setItem(this.tableIdentifier, JSON.stringify(modifiedData))
     }
   }
+  addRow= ( ) => {
+    this.props.xy[1]=this.props.xy[1] + 1
+    this.forceUpdate();
 
+  }
+  addColumn = ( ) => {
+    this.props.xy[0]=this.props.xy[0] + 1
+    this.forceUpdate();
+
+  }
   render() {
     const rows = []
 
-    for (let y = 0; y < this.props.y + 1; y += 1) {
+    for (let y = 0; y < this.props.xy[1] + 1; y += 1) {
       const rowData = this.state.data[y] || {}
       rows.push(
         <Row
@@ -151,14 +160,17 @@ export default class Grid extends React.Component {
           updateCells={this.updateCells}
           key={y}
           y={y}
-          x={this.props.x + 1}
+          x={this.props.xy[0] + 1}
           rowData={rowData}
+          addRow={this.addRow }
+          addColumn={this.addColumn }
+
         />,
       )
     }
     const css={
       display: 'grid' ,
-      gridTemplateColumns: `repeat(${this.props.x+1}, 80px)`,
+      gridTemplateColumns: `repeat(${this.props.xy[0]+1}, 80px)`,
       backgroundColor: '#fff',
       color : '#444' ,
       width :  'max-content'
@@ -174,15 +186,16 @@ export default class Grid extends React.Component {
 
 Grid.propTypes = {
   /**
-   * The number of columns of the table
+   * The number of rows and columns of the table
+   * Using an array to be able to update the x and y values
    */
-  x: PropTypes.number.isRequired,
-
+  xy: PropTypes.arrayOf(PropTypes.shape({
+    x: PropTypes.number.isRequired,
+    y: PropTypes.number.isRequired,
+  })).isRequired,
   /**
    * The number of rows of the table
    */
-  y: PropTypes.number.isRequired,
-
   id: PropTypes.string,
 
   /**
