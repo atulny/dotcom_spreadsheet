@@ -170,7 +170,7 @@ export default class Cell extends React.Component {
    */
   computeDisplay = ({ x, y }, value) => {
     if (value.slice(0, 1) === '=') {
-      const res = this.props.executeFormula({ x, y }, value.slice(1))
+      const res = this.props.execFormula({ x, y }, value.slice(1))
       if (res.error !== null) {
         return 'INVALID'
       }
@@ -274,7 +274,7 @@ Cell.propTypes = {
   /**
    * Function called when formula recalculation is needed
    */
-  executeFormula: PropTypes.func.isRequired,
+  execFormula: PropTypes.func.isRequired,
 
   /**
    * Function called when a cell is refreshed and requires

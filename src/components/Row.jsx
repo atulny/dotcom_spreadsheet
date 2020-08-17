@@ -18,7 +18,7 @@ const Row = (props) => {
         onChangedValue={props.handleChangedCell}
         updateCells={props.updateCells}
         value={props.rowData[x] || ''}
-        executeFormula={props.executeFormula}
+        execFormula={props.execFormula}
         addColumn={props.addColumn}
         addRow={props.addRow}
 

@@ -1,4 +1,4 @@
-import React from 'react'
+import React,{useEffect} from 'react'
 import PropTypes from 'prop-types'
 import { Parser as FormulaParser } from 'hot-formula-parser'
 import Row from './Row'
@@ -14,26 +14,27 @@ export default class Grid extends React.Component {
       data: {},
     }
 
-    this.tableIdentifier = `gridData-${props.id}`
+    this.tableIdentifier = `gridData-${props.id}`;
 
-    // Initialize the formula parser on demand
-    this.parser = new FormulaParser()
+      // Initialize the formula parser on demand
+      this.parser = new FormulaParser()
 
-    // When a formula contains a cell value, this event lets us
-    // hook and return an error value if necessary
-    this.parser.on('callCellValue', (cellCoord, done) => {
-      const x = cellCoord.column.index + 1
-      const y = cellCoord.row.index + 1
+      // When a formula contains a cell value, this event lets us
+      // hook and return an error value if necessary
+      this.parser.on('callCellValue', (cellCoord, done) => {
+        const x = cellCoord.column.index + 1
+        const y = cellCoord.row.index + 1
 
-      // Check if I have that coordinates tuple in the table range
-      if (x > this.props.xy[0] || y > this.props.xy[1]) {
-        throw this.parser.Error(this.parser.ERROR_NOT_AVAILABLE)
-      }
+        // Check if I have that coordinates tuple in the table range
+        if (x > this.props.xy[0] || y > this.props.xy[1]) {
+          throw this.parser.Error(this.parser.ERROR_NOT_AVAILABLE)
+        }
 
-      // Check that the cell is not self referencing
-      if (this.parser.cell.x === x && this.parser.cell.y === y) {
-        throw this.parser.Error(this.parser.ERROR_REF)
-      }
+        // Check that the cell is not self referencing
+        if (this.parser.cell.x === x && this.parser.cell.y === y) {
+          throw this.parser.Error(this.parser.ERROR_REF)
+        }
+    
 
       if (!this.state.data[y] || !this.state.data[y][x]) {
         return done('')
@@ -41,7 +42,7 @@ export default class Grid extends React.Component {
 
       // All fine
       return done(this.state.data[y][x])
-    })
+    });
 
     // When a formula contains a range value, this event lets us
     // hook and return an error value if necessary
@@ -83,6 +84,8 @@ export default class Grid extends React.Component {
         done(fragment)
       }
     })
+  
+    
   }
 
   /**
